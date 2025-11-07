@@ -20,8 +20,11 @@ class AsyncClient(ahttpx.Client):
 
 # OpenTelemetry instrumentation compatibility
 # httpx v1 only has ByteStream, but instrumentation expects SyncByteStream and AsyncByteStream
+from ._pool import Transport
+
 SyncByteStream = ByteStream
 AsyncByteStream = ByteStream
+BaseTransport = Transport
 
 
 # Add missing exception types from 0.28 that may be used in the codebase

@@ -20,6 +20,7 @@ __all__ = [
     "__version__",
     "AsyncByteStream",
     "AsyncClient",
+    "BaseTransport",
     "ByteStream",
     "Client",
     "CloseError",
