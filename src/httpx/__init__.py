@@ -18,6 +18,7 @@ from ._compat import *  # AsyncClient and exception types for 0.28 compatibility
 __all__ = [
     "__title__",
     "__version__",
+    "AsyncBaseTransport",
     "AsyncByteStream",
     "AsyncClient",
     "BaseTransport",
