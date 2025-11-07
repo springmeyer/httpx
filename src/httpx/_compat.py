@@ -5,16 +5,23 @@ This module provides AsyncClient as an alias to ahttpx.Client
 and adds missing exception types that were present in 0.28.
 """
 import ahttpx
+from ._streams import ByteStream
 
 
 # Create AsyncClient as an alias to ahttpx.Client
 # and monkey-patch it to add aclose() as an alias for close()
 class AsyncClient(ahttpx.Client):
     """Async HTTP client with 0.28 API compatibility."""
-    
+
     async def aclose(self):
         """Alias for close() to maintain 0.28 API compatibility."""
         await self.close()
+
+
+# OpenTelemetry instrumentation compatibility
+# httpx v1 only has ByteStream, but instrumentation expects SyncByteStream and AsyncByteStream
+SyncByteStream = ByteStream
+AsyncByteStream = ByteStream
 
 
 # Add missing exception types from 0.28 that may be used in the codebase
