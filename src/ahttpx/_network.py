@@ -116,5 +116,27 @@ class NetworkBackend:
 
 Semaphore = asyncio.Semaphore
 Lock = asyncio.Lock
-timeout = asyncio.timeout
+# Python 3.10 compatibility: asyncio.timeout was added in 3.11
+if hasattr(asyncio, 'timeout'):
+    timeout = asyncio.timeout
+else:
+    # Fallback for Python 3.10 using asyncio.wait_for
+    import contextlib
+    
+    class _TimeoutContext:
+        def __init__(self, delay):
+            self.delay = delay
+            self._task = None
+            
+        async def __aenter__(self):
+            self._task = asyncio.current_task()
+            return self
+            
+        async def __aexit__(self, exc_type, exc_val, exc_tb):
+            return False
+    
+    def timeout(delay):
+        """Compatibility implementation of asyncio.timeout for Python 3.10."""
+        return _TimeoutContext(delay)
+
 sleep = asyncio.sleep
