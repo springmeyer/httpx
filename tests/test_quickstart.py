@@ -1,22 +1,16 @@
 import json
-
 import httpx
 import pytest
 
 
 def echo(request):
     request.read()
-    response = httpx.Response(
-        200,
-        content=httpx.JSON(
-            {
-                'method': request.method,
-                'query-params': dict(request.url.params.items()),
-                'content-type': request.headers.get('Content-Type'),
-                'json': json.loads(request.body) if request.body else None,
-            }
-        ),
-    )
+    response = httpx.Response(200, content=httpx.JSON({
+        'method': request.method,
+        'query-params': dict(request.url.params.items()),
+        'content-type': request.headers.get('Content-Type'),
+        'json': json.loads(request.body) if request.body else None,
+    }))
     return response
 
 

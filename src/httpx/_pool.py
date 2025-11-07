@@ -1,15 +1,16 @@
 import time
-import types
 import typing
+import types
 
 from ._content import Content
 from ._headers import Headers
 from ._network import Lock, NetworkBackend, Semaphore
 from ._parsers import HTTPParser
-from ._request import Request
 from ._response import Response
+from ._request import Request
 from ._streams import HTTPStream, Stream
 from ._urls import URL
+
 
 __all__ = [
     "Transport",
@@ -89,7 +90,11 @@ class ConnectionPool(Transport):
                 return conn
 
         # Or else create a new connection.
-        conn = open_connection(origin, hostname=request.headers["Host"], backend=self._network_backend)
+        conn = open_connection(
+            origin,
+            hostname=request.headers["Host"],
+            backend=self._network_backend
+        )
         self._connections.append(conn)
         return conn
 
@@ -119,7 +124,6 @@ class ConnectionPool(Transport):
     def __del__(self):
         if not self._closed:
             import warnings
-
             warnings.warn("ConnectionPool was garbage collected without being closed.")
 
     def __enter__(self) -> "ConnectionPool":
@@ -161,7 +165,7 @@ class Connection(Transport):
 
     # API entry points...
     def send(self, request: Request) -> Response:
-        # async with self._request_lock:
+        #async with self._request_lock:
         #    try:
         self._send_head(request)
         self._send_body(request)
@@ -207,7 +211,10 @@ class Connection(Transport):
         target = request.url.target.encode('ascii')
         protocol = b'HTTP/1.1'
         self._parser.send_method_line(method, target, protocol)
-        headers = [(k.encode('ascii'), v.encode('ascii')) for k, v in request.headers.items()]
+        headers = [
+            (k.encode('ascii'), v.encode('ascii'))
+            for k, v in request.headers.items()
+        ]
         self._parser.send_headers(headers)
 
     def _send_body(self, request: Request) -> None:
@@ -219,7 +226,10 @@ class Connection(Transport):
     def _recv_head(self) -> tuple[int, Headers]:
         _, code, _ = self._parser.recv_status_line()
         h = self._parser.recv_headers()
-        headers = Headers([(k.decode('ascii'), v.decode('ascii')) for k, v in h])
+        headers = Headers([
+            (k.decode('ascii'), v.decode('ascii'))
+            for k, v in h
+        ])
         return code, headers
 
     def _recv_body(self) -> bytes:
@@ -250,10 +260,11 @@ class Connection(Transport):
 
 
 def open_connection(
-    url: URL | str,
-    hostname: str = '',
-    backend: NetworkBackend | None = None,
-) -> Connection:
+        url: URL | str,
+        hostname: str = '',
+        backend: NetworkBackend | None = None,
+    ) -> Connection:
+
     if isinstance(url, str):
         url = URL(url)
 

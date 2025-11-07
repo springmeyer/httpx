@@ -2,8 +2,8 @@ import types
 import typing
 
 from ._content import Content
-from ._headers import Headers, parse_opts_header
 from ._streams import ByteStream, Stream
+from ._headers import Headers, parse_opts_header
 
 __all__ = ["Response"]
 
@@ -101,10 +101,10 @@ class Response:
                 raise TypeError(f'Expected `Content | Stream | bytes | None` got {type(content)}')
 
         # https://datatracker.ietf.org/doc/html/rfc2616#section-4.3
-        # RFC 2616, Section 4.3, Message Body.
+        # RFC 2616, Section 4.3, Message Body.
         #
         # All 1xx (informational), 204 (no content), and 304 (not modified) responses
-        # MUST NOT include a message-body. All other responses do include a
+        # MUST NOT include a message-body. All other responses do include a
         # message-body, although it MAY be of zero length.
         if status_code >= 200 and status_code != 204 and status_code != 304:
             content_length: int | None = self.stream.size
@@ -147,11 +147,10 @@ class Response:
     async def __aenter__(self):
         return self
 
-    async def __aexit__(
-        self,
+    async def __aexit__(self,
         exc_type: type[BaseException] | None = None,
         exc_value: BaseException | None = None,
-        traceback: types.TracebackType | None = None,
+        traceback: types.TracebackType | None = None
     ):
         await self.close()
 

@@ -4,7 +4,7 @@ import httpx
 class ByteIterator:
     def __init__(self, buffer=b""):
         self._buffer = buffer
-
+    
     def next(self) -> bytes:
         buffer = self._buffer
         self._buffer = b''
@@ -17,9 +17,10 @@ def test_request():
     assert repr(r) == "<Request [GET 'https://example.com']>"
     assert r.method == "GET"
     assert r.url == "https://example.com"
-    assert r.headers == {"Host": "example.com"}
+    assert r.headers == {
+        "Host": "example.com"
+    }
     assert r.read() == b""
-
 
 def test_request_bytes():
     content = b"Hello, world"

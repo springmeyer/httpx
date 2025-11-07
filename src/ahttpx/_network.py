@@ -3,13 +3,18 @@ import ssl
 import types
 import typing
 
+import certifi
+
 from ._streams import Stream
+
 
 __all__ = ["NetworkBackend", "NetworkStream", "timeout"]
 
 
 class NetworkStream(Stream):
-    def __init__(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter, address: str = '') -> None:
+    def __init__(
+        self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter, address: str = ''
+    ) -> None:
         self._reader = reader
         self._writer = writer
         self._address = address
@@ -40,7 +45,6 @@ class NetworkStream(Stream):
     def __del__(self):
         if not self._closed:
             import warnings
-
             warnings.warn("NetworkStream was garbage collected without being closed.")
 
     # Context managed usage...
@@ -82,7 +86,6 @@ class NetworkBackend:
 
     def create_default_context(self) -> ssl.SSLContext:
         import certifi
-
         return ssl.create_default_context(cafile=certifi.where())
 
     async def connect(self, host: str, port: int) -> NetworkStream:
@@ -118,23 +121,22 @@ if hasattr(asyncio, 'timeout'):
     timeout = asyncio.timeout
 else:
     # Fallback for Python 3.10 using asyncio.wait_for
-    pass
-
+    import contextlib
+    
     class _TimeoutContext:
         def __init__(self, delay):
             self.delay = delay
             self._task = None
-
+            
         async def __aenter__(self):
             self._task = asyncio.current_task()
             return self
-
+            
         async def __aexit__(self, exc_type, exc_val, exc_tb):
             return False
-
+    
     def timeout(delay):
         """Compatibility implementation of asyncio.timeout for Python 3.10."""
         return _TimeoutContext(delay)
-
 
 sleep = asyncio.sleep

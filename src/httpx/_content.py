@@ -2,7 +2,7 @@ import json
 import os
 import typing
 
-from ._streams import ByteStream, FileStream, MultiPartStream, Stream
+from ._streams import Stream, ByteStream, FileStream, MultiPartStream
 from ._urlencode import urldecode, urlencode
 
 __all__ = [
@@ -45,7 +45,12 @@ class Form(typing.Mapping[str, str], Content):
 
     def __init__(
         self,
-        form: (typing.Mapping[str, str | typing.Sequence[str]] | typing.Sequence[tuple[str, str]] | str | None) = None,
+        form: (
+            typing.Mapping[str, str | typing.Sequence[str]]
+            | typing.Sequence[tuple[str, str]]
+            | str
+            | None
+        ) = None,
     ) -> None:
         d: dict[str, list[str]] = {}
 
@@ -146,7 +151,10 @@ class Form(typing.Mapping[str, str], Content):
         return hash(str(self))
 
     def __eq__(self, other: typing.Any) -> bool:
-        return isinstance(other, Form) and sorted(self.multi_items()) == sorted(other.multi_items())
+        return (
+            isinstance(other, Form) and
+            sorted(self.multi_items()) == sorted(other.multi_items())
+        )
 
     def __str__(self) -> str:
         return urlencode(self.multi_dict())
@@ -197,8 +205,12 @@ class Files(typing.Mapping[str, File], Content):
 
     def __init__(
         self,
-        files: (typing.Mapping[str, File | typing.Sequence[File]] | typing.Sequence[tuple[str, File]] | None) = None,
-        boundary: str = '',
+        files: (
+            typing.Mapping[str, File | typing.Sequence[File]]
+            | typing.Sequence[tuple[str, File]]
+            | None
+        ) = None,
+        boundary: str = ''
     ) -> None:
         d: dict[str, list[File]] = {}
 
@@ -264,9 +276,12 @@ class Files(typing.Mapping[str, File], Content):
 
     def __bool__(self) -> bool:
         return bool(self._dict)
-
+ 
     def __eq__(self, other: typing.Any) -> bool:
-        return isinstance(other, Files) and sorted(self.multi_items()) == sorted(other.multi_items())
+        return (
+            isinstance(other, Files) and
+            sorted(self.multi_items()) == sorted(other.multi_items())
+        )
 
     def __repr__(self) -> str:
         return f"<Files {self.multi_items()!r}>"
@@ -277,7 +292,12 @@ class JSON(Content):
         self._data = data
 
     def encode(self) -> Stream:
-        content = json.dumps(self._data, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8")
+        content = json.dumps(
+            self._data,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            allow_nan=False
+        ).encode("utf-8")
         return ByteStream(content)
 
     def content_type(self) -> str:
@@ -321,14 +341,21 @@ class MultiPart(Content):
     def __init__(
         self,
         form: (
-            Form | typing.Mapping[str, str | typing.Sequence[str]] | typing.Sequence[tuple[str, str]] | str | None
+            Form
+            | typing.Mapping[str, str | typing.Sequence[str]]
+            | typing.Sequence[tuple[str, str]]
+            | str
+            | None
         ) = None,
         files: (
-            Files | typing.Mapping[str, File | typing.Sequence[File]] | typing.Sequence[tuple[str, File]] | None
+            Files
+            | typing.Mapping[str, File | typing.Sequence[File]]
+            | typing.Sequence[tuple[str, File]]
+            | None
         ) = None,
-        boundary: str | None = None,
+        boundary: str | None = None
     ):
-        self._form = form if isinstance(form, Form) else Form(form)
+        self._form = form if isinstance(form , Form) else Form(form)
         self._files = files if isinstance(files, Files) else Files(files)
         self._boundary = os.urandom(16).hex() if boundary is None else boundary
 

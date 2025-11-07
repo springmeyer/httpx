@@ -2,8 +2,8 @@ import types
 import typing
 
 from ._content import Content
-from ._headers import Headers
 from ._streams import ByteStream, Stream
+from ._headers import Headers
 from ._urls import URL
 
 __all__ = ["Request"]
@@ -23,7 +23,7 @@ class Request:
         self.stream: Stream = ByteStream(b"")
 
         # https://datatracker.ietf.org/doc/html/rfc2616#section-14.23
-        # RFC 2616, Section 14.23, Host.
+        # RFC 2616, Section 14.23, Host.
         #
         # A client MUST include a Host header field in all HTTP/1.1 request messages.
         if "Host" not in self.headers:
@@ -42,7 +42,7 @@ class Request:
                 raise TypeError(f'Expected `Content | Stream | bytes | None` got {type(content)}')
 
             # https://datatracker.ietf.org/doc/html/rfc2616#section-4.3
-            # RFC 2616, Section 4.3, Message Body.
+            # RFC 2616, Section 4.3, Message Body.
             #
             # The presence of a message-body in a request is signaled by the
             # inclusion of a Content-Length or Transfer-Encoding header field in
@@ -82,11 +82,10 @@ class Request:
     def __enter__(self):
         return self
 
-    def __exit__(
-        self,
+    def __exit__(self,
         exc_type: type[BaseException] | None = None,
         exc_value: BaseException | None = None,
-        traceback: types.TracebackType | None = None,
+        traceback: types.TracebackType | None = None
     ):
         self.close()
 

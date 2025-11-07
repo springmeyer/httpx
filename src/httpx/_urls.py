@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import typing
 
-from ._urlencode import unquote, urldecode, urlencode
 from ._urlparse import urlparse
+from ._urlencode import unquote, urldecode, urlencode
 
 __all__ = ["QueryParams", "URL"]
 
@@ -114,7 +114,10 @@ class URL:
         elif isinstance(url, URL):
             self._uri_reference = url._uri_reference.copy_with(**kwargs)
         else:
-            raise TypeError("Invalid type for url.  Expected str or httpx.URL," f" got {type(url)}: {url!r}")
+            raise TypeError(
+                "Invalid type for url.  Expected str or httpx.URL,"
+                f" got {type(url)}: {url!r}"
+            )
 
     @property
     def scheme(self) -> str:
@@ -346,7 +349,9 @@ class QueryParams(typing.Mapping[str, str]):
 
     def __init__(
         self,
-        params: ("QueryParams" | dict[str, str | list[str]] | list[tuple[str, str]] | str | None) = None,
+        params: (
+            "QueryParams" | dict[str, str | list[str]] | list[tuple[str, str]] | str | None
+        ) = None,
     ) -> None:
         d: dict[str, list[str]] = {}
 
@@ -496,7 +501,9 @@ class QueryParams(typing.Mapping[str, str]):
 
     def copy_update(
         self,
-        params: ("QueryParams" | dict[str, str | list[str]] | list[tuple[str, str]] | None) = None,
+        params: (
+            "QueryParams" | dict[str, str | list[str]] | list[tuple[str, str]] | None
+        ) = None,
     ) -> "QueryParams":
         """
         Return a new QueryParams instance, updated with.

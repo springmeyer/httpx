@@ -10,7 +10,7 @@ __all__ = ['HTTPParser', 'Mode', 'ProtocolError']
 # * Upgrade
 # * CONNECT
 
-# * Support 'Expect: 100 Continue'
+# * Support 'Expect: 100 Continue'
 # * Add 'Error' state transitions
 # * Add tests to trickle data
 # * Add type annotations
@@ -65,7 +65,6 @@ class Mode(enum.Enum):
 #    transition from SEND_HEADERS back to IDLE
 # 3. ...
 
-
 class ProtocolError(Exception):
     pass
 
@@ -84,7 +83,6 @@ class HTTPParser:
     client.complete()
     client.close()
     """
-
     def __init__(self, stream: Stream, mode: str) -> None:
         self.stream = stream
         self.parser = ReadAheadParser(stream)
@@ -172,7 +170,11 @@ class HTTPParser:
             if lname == b'host':
                 seen_host = True
             elif lname == b'content-length':
-                self.send_content_length = bounded_int(value, max_digits=20, exc_text="Sent invalid Content-Length")
+                self.send_content_length = bounded_int(
+                    value,
+                    max_digits=20,
+                    exc_text="Sent invalid Content-Length"
+                )
             elif lname == b'connection' and value == b'close':
                 self.send_keep_alive = False
             elif lname == b'transfer-encoding' and value == b'chunked':
@@ -271,7 +273,11 @@ class HTTPParser:
         if protocol != b'HTTP/1.1':
             raise ProtocolError("Received unsupported protocol version")
 
-        status_code = bounded_int(status_code_str, max_digits=3, exc_text="Received invalid status code")
+        status_code = bounded_int(
+            status_code_str,
+            max_digits=3,
+            exc_text="Received invalid status code"
+        )
         if status_code < 100:
             raise ProtocolError("Received invalid status code")
         # 1xx status codes preceed the final response status code
@@ -308,7 +314,11 @@ class HTTPParser:
             if lname == b'host':
                 seen_host = True
             elif lname == b'content-length':
-                self.recv_content_length = bounded_int(value, max_digits=20, exc_text="Received invalid Content-Length")
+                self.recv_content_length = bounded_int(
+                    value,
+                    max_digits=20,
+                    exc_text="Received invalid Content-Length"
+                )
             elif lname == b'connection' and value == b'close':
                 self.recv_keep_alive = False
             elif lname == b'transfer-encoding' and value == b'chunked':
@@ -403,10 +413,17 @@ class HTTPParser:
             await self.stream.close()
 
     def is_keepalive(self) -> bool:
-        return self.send_keep_alive and self.recv_keep_alive and self.send_state != State.CLOSED
+        return (
+            self.send_keep_alive and
+            self.recv_keep_alive and
+            self.send_state != State.CLOSED
+        )
 
     def is_idle(self) -> bool:
-        return self.send_state == State.SEND_METHOD_LINE or self.recv_state == State.RECV_METHOD_LINE
+        return (
+            self.send_state == State.SEND_METHOD_LINE or
+            self.recv_state == State.RECV_METHOD_LINE
+        )
 
     def is_closed(self) -> bool:
         return self.send_state == State.CLOSED
@@ -428,7 +445,6 @@ class ReadAheadParser:
     """
     A buffered I/O stream, with methods for read-ahead parsing.
     """
-
     def __init__(self, stream: Stream) -> None:
         self._buffer = b''
         self._stream = stream

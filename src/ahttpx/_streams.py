@@ -1,11 +1,11 @@
 import io
-import os
-import types
 import typing
+import types
+import os
 
 
 class Stream:
-    async def read(self, size: int = -1) -> bytes:
+    async def read(self, size: int=-1) -> bytes:
         raise NotImplementedError()
 
     async def write(self, data: bytes) -> None:
@@ -25,7 +25,7 @@ class Stream:
         self,
         exc_type: type[BaseException] | None = None,
         exc_value: BaseException | None = None,
-        traceback: types.TracebackType | None = None,
+        traceback: types.TracebackType | None = None
     ):
         await self.close()
 
@@ -35,7 +35,7 @@ class ByteStream(Stream):
         self._buffer = io.BytesIO(data)
         self._size = len(data)
 
-    async def read(self, size: int = -1) -> bytes:
+    async def read(self, size: int=-1) -> bytes:
         return self._buffer.read(size)
 
     async def close(self) -> None:
@@ -58,7 +58,7 @@ class DuplexStream(Stream):
         self._read_buffer = io.BytesIO(data)
         self._write_buffer = io.BytesIO()
 
-    async def read(self, size: int = -1) -> bytes:
+    async def read(self, size: int=-1) -> bytes:
         return self._read_buffer.read(size)
 
     async def write(self, buffer: bytes):
@@ -80,7 +80,7 @@ class FileStream(Stream):
         self._path = path
         self._fin = fin
 
-    async def read(self, size: int = -1) -> bytes:
+    async def read(self, size: int=-1) -> bytes:
         return self._fin.read(size)
 
     async def close(self) -> None:
@@ -137,7 +137,7 @@ class MultiPartStream(Stream):
         self._form = list(form)
         self._files = list(files)
         self._boundary = boundary or os.urandom(16).hex()
-        # Mutable state...
+        # Mutable state...
         self._form_progress = list(self._form)
         self._files_progress = list(self._files)
         self._fin: typing.Any = None
@@ -179,7 +179,10 @@ class MultiPartStream(Stream):
             key, value = self._form_progress.pop(0)
             name = key.translate({10: "%0A", 13: "%0D", 34: "%22"})
             return (
-                f"--{self._boundary}\r\n" f'Content-Disposition: form-data; name="{name}"\r\n' f"\r\n" f"{value}\r\n"
+                f"--{self._boundary}\r\n"
+                f'Content-Disposition: form-data; name="{name}"\r\n'
+                f"\r\n"
+                f"{value}\r\n"
             ).encode("utf-8")
         elif self._files_progress and self._fin is None:
             # return start of a file item
@@ -193,7 +196,7 @@ class MultiPartStream(Stream):
                 f"\r\n"
             ).encode("utf-8")
         elif self._fin is not None:
-            chunk = await self._fin.read(64 * 1024)
+            chunk = await self._fin.read(64*1024)
             if chunk != b'':
                 # return some bytes from file
                 return chunk
@@ -203,7 +206,7 @@ class MultiPartStream(Stream):
                 self._fin = None
                 return b"\r\n"
         elif not self._complete:
-            # return final section of multipart
+            # return final section of multipart
             self._complete = True
             return f"--{self._boundary}--\r\n".encode("utf-8")
         # return EOF marker

@@ -3,13 +3,15 @@ import logging
 import time
 
 from ._content import Text
-from ._network import NetworkBackend, sleep
 from ._parsers import HTTPParser
 from ._request import Request
 from ._response import Response
+from ._network import NetworkBackend, sleep
 from ._streams import HTTPStream
 
-__all__ = ["serve_http", "run"]
+__all__ = [
+    "serve_http", "run"
+]
 
 logger = logging.getLogger("httpx.server")
 
@@ -41,9 +43,7 @@ class HTTPConnection:
                 with Request(method, url, headers=headers, content=stream) as request:
                     try:
                         response = self._endpoint(request)
-                        status_line = (
-                            f"{request.method} {request.url.target} [{response.status_code} {response.reason_phrase}]"
-                        )
+                        status_line = f"{request.method} {request.url.target} [{response.status_code} {response.reason_phrase}]"
                         logger.info(status_line)
                     except Exception:
                         logger.error("Internal Server Error", exc_info=True)
@@ -55,10 +55,10 @@ class HTTPConnection:
                         self._send_head(response)
                         self._send_body(response)
                 if self._parser.is_keepalive():
-                    # If the client hasn't read the request body to
+                    # If the client hasn't read the request body to
                     # completion, then do that here.
                     stream.read()
-                # Either revert to idle, or close the connection.
+                # Either revert to idle, or close the connection.
                 self._reset()
         except Exception:
             logger.error("Internal Server Error", exc_info=True)
@@ -72,7 +72,10 @@ class HTTPConnection:
         m = method.decode('ascii')
         t = target.decode('ascii')
         headers = self._parser.recv_headers()
-        h = [(k.decode('latin-1'), v.decode('latin-1')) for k, v in headers]
+        h = [
+            (k.decode('latin-1'), v.decode('latin-1'))
+            for k, v in headers
+        ]
         return m, t, h
 
     def _recv_body(self):
@@ -84,7 +87,10 @@ class HTTPConnection:
         status = response.status_code
         reason = response.reason_phrase.encode('ascii')
         self._parser.send_status_line(protocol, status, reason)
-        headers = [(k.encode('ascii'), v.encode('ascii')) for k, v in response.headers.items()]
+        headers = [
+            (k.encode('ascii'), v.encode('ascii'))
+            for k, v in response.headers.items()
+        ]
         self._parser.send_headers(headers)
 
     def _send_body(self, response: Response):
@@ -103,7 +109,7 @@ class HTTPServer:
         self.url = f"http://{host}:{port}/"
 
     def wait(self):
-        while True:
+        while(True):
             sleep(1)
 
 
@@ -114,7 +120,9 @@ def serve_http(endpoint):
         connection.handle_requests()
 
     logging.basicConfig(
-        format="%(levelname)s [%(asctime)s] %(name)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.DEBUG
+        format="%(levelname)s [%(asctime)s] %(name)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        level=logging.DEBUG
     )
 
     backend = NetworkBackend()

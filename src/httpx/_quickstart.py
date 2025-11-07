@@ -6,6 +6,7 @@ from ._headers import Headers
 from ._streams import Stream
 from ._urls import URL
 
+
 __all__ = ['get', 'post', 'put', 'patch', 'delete']
 
 
@@ -16,7 +17,6 @@ def get(
     with Client() as client:
         return client.request("GET", url=url, headers=headers)
 
-
 def post(
     url: URL | str,
     headers: Headers | typing.Mapping[str, str] | None = None,
@@ -24,7 +24,6 @@ def post(
 ):
     with Client() as client:
         return client.request("POST", url, headers=headers, content=content)
-
 
 def put(
     url: URL | str,
@@ -34,7 +33,6 @@ def put(
     with Client() as client:
         return client.request("PUT", url, headers=headers, content=content)
 
-
 def patch(
     url: URL | str,
     headers: Headers | typing.Mapping[str, str] | None = None,
@@ -42,7 +40,6 @@ def patch(
 ):
     with Client() as client:
         return client.request("PATCH", url, headers=headers, content=content)
-
 
 def delete(
     url: URL | str,

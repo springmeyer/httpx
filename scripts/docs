@@ -1,14 +1,16 @@
 #!venv/bin/python
-import logging
 import pathlib
 import posixpath
-import xml.etree.ElementTree as etree
 
 import click
 import ghp_import
+import logging
 import httpx
 import jinja2
 import markdown
+
+import xml.etree.ElementTree as etree
+
 
 pages = {
     '/': 'docs/index.md',
