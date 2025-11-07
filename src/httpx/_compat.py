@@ -28,6 +28,24 @@ BaseTransport = Transport
 AsyncBaseTransport = Transport  # v1 uses single Transport for both sync and async
 
 
+# Connection limits compatibility
+# httpx v1 doesn't have a Limits class - limits are passed directly to Client
+class Limits:
+    """
+    Compatibility wrapper for httpx 0.28 Limits class.
+    In v1, these are passed directly to Client/AsyncClient constructor.
+    """
+    def __init__(
+        self,
+        max_connections: int | None = None,
+        max_keepalive_connections: int | None = None,
+        keepalive_expiry: float | None = 5.0,
+    ):
+        self.max_connections = max_connections
+        self.max_keepalive_connections = max_keepalive_connections
+        self.keepalive_expiry = keepalive_expiry
+
+
 # Add missing exception types from 0.28 that may be used in the codebase
 class ReadTimeout(Exception):
     """Raised when a read operation times out."""

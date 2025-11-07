@@ -47,6 +47,7 @@ __all__ = [
     "HTTPStream",
     "InvalidURL",
     "JSON",
+    "Limits",
     "MultiPart",
     "NetworkBackend",
     "NetworkError",
