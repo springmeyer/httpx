@@ -4,7 +4,7 @@ import httpx
 class ByteIterator:
     def __init__(self, buffer=b""):
         self._buffer = buffer
-    
+
     def next(self) -> bytes:
         buffer = self._buffer
         self._buffer = b''

@@ -115,7 +115,7 @@ class Client:
         self,
         exc_type: type[BaseException] | None = None,
         exc_value: BaseException | None = None,
-        traceback: types.TracebackType | None = None
+        traceback: types.TracebackType | None = None,
     ):
         await self.close()
 
@@ -128,10 +128,7 @@ class RedirectMiddleware(Transport):
         self._transport = transport
 
     def is_redirect(self, response: Response) -> bool:
-        return (
-            response.status_code in (301, 302, 303, 307, 308)
-            and "Location" in response.headers
-        )
+        return response.status_code in (301, 302, 303, 307, 308) and "Location" in response.headers
 
     def build_redirect_request(self, request: Request, response: Response) -> Request:
         raise NotImplementedError()

@@ -11,7 +11,6 @@ import typing
 
 from ._streams import Stream
 
-
 __all__ = ["NetworkBackend", "NetworkStream", "timeout"]
 
 _timeout_stack: contextvars.ContextVar[list[float]] = contextvars.ContextVar("timeout_context", default=[])
@@ -95,6 +94,7 @@ class NetworkStream(Stream):
     def __del__(self):
         if not self._is_closed:
             import warnings
+
             warnings.warn(f"NetworkStream was garbage collected without being closed.")
 
     def __enter__(self) -> "NetworkStream":
@@ -142,6 +142,7 @@ class NetworkListener:
     def __del__(self):
         if not self._is_closed:
             import warnings
+
             warnings.warn("NetworkListener was garbage collected without being closed.")
 
     def __enter__(self) -> "NetworkListener":
@@ -187,10 +188,7 @@ class NetworkServer:
     def _serve(self):
         while stream := self.listener.accept():
             self._executor.submit(self._handler, stream)
-            self._streams = [
-                stream for stream in self._streams
-                if not stream.is_closed()
-            ]
+            self._streams = [stream for stream in self._streams if not stream.is_closed()]
             self._streams.append(stream)
 
     def _handler(self, stream):
@@ -206,6 +204,7 @@ class NetworkBackend:
 
     def create_default_context(self) -> ssl.SSLContext:
         import certifi
+
         return ssl.create_default_context(cafile=certifi.where())
 
     def connect(self, host: str, port: int) -> NetworkStream:

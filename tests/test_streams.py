@@ -1,5 +1,5 @@
-import pytest
 import httpx
+import pytest
 
 
 def test_stream():
@@ -44,22 +44,23 @@ def test_filestream(tmp_path):
         assert s.read(5) == b'hello'
 
 
-
 def test_multipartstream(tmp_path):
     path = tmp_path / 'example.txt'
     path.write_bytes(b'hello world' + b'x' * 50)
 
-    expected = b''.join([
-        b'--boundary\r\n',
-        b'Content-Disposition: form-data; name="email"\r\n',
-        b'\r\n',
-        b'heya@example.com\r\n',
-        b'--boundary\r\n',
-        b'Content-Disposition: form-data; name="upload"; filename="example.txt"\r\n',
-        b'\r\n',
-        b'hello world' + ( b'x' * 50) + b'\r\n',
-        b'--boundary--\r\n',
-    ])
+    expected = b''.join(
+        [
+            b'--boundary\r\n',
+            b'Content-Disposition: form-data; name="email"\r\n',
+            b'\r\n',
+            b'heya@example.com\r\n',
+            b'--boundary\r\n',
+            b'Content-Disposition: form-data; name="upload"; filename="example.txt"\r\n',
+            b'\r\n',
+            b'hello world' + (b'x' * 50) + b'\r\n',
+            b'--boundary--\r\n',
+        ]
+    )
 
     form = [('email', 'heya@example.com')]
     files = [('upload', str(path))]

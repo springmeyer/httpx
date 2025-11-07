@@ -28,9 +28,7 @@ class InvalidURL(ValueError):
 MAX_URL_LENGTH = 65536
 
 # https://datatracker.ietf.org/doc/html/rfc3986.html#section-2.3
-UNRESERVED_CHARACTERS = (
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
-)
+UNRESERVED_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
 SUB_DELIMS = "!$&'()*+,;="
 
 PERCENT_ENCODED_REGEX = re.compile("%[A-Fa-f0-9]{2}")
@@ -39,24 +37,16 @@ PERCENT_ENCODED_REGEX = re.compile("%[A-Fa-f0-9]{2}")
 
 # The fragment percent-encode set is the C0 control percent-encode set
 # and U+0020 SPACE, U+0022 ("), U+003C (<), U+003E (>), and U+0060 (`).
-FRAG_SAFE = "".join(
-    [chr(i) for i in range(0x20, 0x7F) if i not in (0x20, 0x22, 0x3C, 0x3E, 0x60)]
-)
+FRAG_SAFE = "".join([chr(i) for i in range(0x20, 0x7F) if i not in (0x20, 0x22, 0x3C, 0x3E, 0x60)])
 
 # The query percent-encode set is the C0 control percent-encode set
 # and U+0020 SPACE, U+0022 ("), U+0023 (#), U+003C (<), and U+003E (>).
-QUERY_SAFE = "".join(
-    [chr(i) for i in range(0x20, 0x7F) if i not in (0x20, 0x22, 0x23, 0x3C, 0x3E)]
-)
+QUERY_SAFE = "".join([chr(i) for i in range(0x20, 0x7F) if i not in (0x20, 0x22, 0x23, 0x3C, 0x3E)])
 
 # The path percent-encode set is the query percent-encode set
 # and U+003F (?), U+0060 (`), U+007B ({), and U+007D (}).
 PATH_SAFE = "".join(
-    [
-        chr(i)
-        for i in range(0x20, 0x7F)
-        if i not in (0x20, 0x22, 0x23, 0x3C, 0x3E) + (0x3F, 0x60, 0x7B, 0x7D)
-    ]
+    [chr(i) for i in range(0x20, 0x7F) if i not in (0x20, 0x22, 0x23, 0x3C, 0x3E) + (0x3F, 0x60, 0x7B, 0x7D)]
 )
 
 # The userinfo percent-encode set is the path percent-encode set
@@ -122,9 +112,7 @@ URL_REGEX = re.compile(
 # {host}
 # :{port}        (optional)
 AUTHORITY_REGEX = re.compile(
-    (
-        r"(?:(?P<userinfo>{userinfo})@)?" r"(?P<host>{host})" r":?(?P<port>{port})?"
-    ).format(
+    (r"(?:(?P<userinfo>{userinfo})@)?" r"(?P<host>{host})" r":?(?P<port>{port})?").format(
         userinfo=".*",  # Any character sequence.
         host="(\\[.*\\]|[^:@]*)",  # Either any character sequence excluding ':' or '@',
         # or an IPv6 address enclosed within square brackets.
@@ -222,9 +210,7 @@ def urlparse(url: str = "", **kwargs: str | None) -> ParseResult:
     if any(char.isascii() and not char.isprintable() for char in url):
         char = next(char for char in url if char.isascii() and not char.isprintable())
         idx = url.find(char)
-        error = (
-            f"Invalid non-printable ASCII character in URL, {char!r} at position {idx}."
-        )
+        error = f"Invalid non-printable ASCII character in URL, {char!r} at position {idx}."
         raise InvalidURL(error)
 
     # Some keyword arguments require special handling.
@@ -270,14 +256,9 @@ def urlparse(url: str = "", **kwargs: str | None) -> ParseResult:
             # If a component includes any ASCII control characters including \t, \r, \n,
             # then treat it as invalid.
             if any(char.isascii() and not char.isprintable() for char in value):
-                char = next(
-                    char for char in value if char.isascii() and not char.isprintable()
-                )
+                char = next(char for char in value if char.isascii() and not char.isprintable())
                 idx = value.find(char)
-                error = (
-                    f"Invalid non-printable ASCII character in URL {key} component, "
-                    f"{char!r} at position {idx}."
-                )
+                error = f"Invalid non-printable ASCII character in URL {key} component, " f"{char!r} at position {idx}."
                 raise InvalidURL(error)
 
             # Ensure that keyword arguments match as a valid regex.
@@ -320,9 +301,7 @@ def urlparse(url: str = "", **kwargs: str | None) -> ParseResult:
     parsed_port: int | None = normalize_port(port, scheme)
 
     has_scheme = parsed_scheme != ""
-    has_authority = (
-        parsed_userinfo != "" or parsed_host != "" or parsed_port is not None
-    )
+    has_authority = parsed_userinfo != "" or parsed_host != "" or parsed_port is not None
     validate_path(path, has_scheme=has_scheme, has_authority=has_authority)
     if has_scheme or has_authority:
         path = normalize_path(path)
@@ -379,10 +358,7 @@ def encode_host(host: str) -> str:
         try:
             import idna  # type: ignore
         except ImportError:
-            raise InvalidURL(
-                f"Cannot handle URL with IDNA hostname: {host!r}. "
-                f"Package 'idna' is not installed."
-            )
+            raise InvalidURL(f"Cannot handle URL with IDNA hostname: {host!r}. " f"Package 'idna' is not installed.")
 
         # IDNA hostnames
         try:
@@ -418,9 +394,7 @@ def normalize_port(port: str | int | None, scheme: str) -> int | None:
         raise InvalidURL(f"Invalid port: {port!r}")
 
     # See https://url.spec.whatwg.org/#url-miscellaneous
-    default_port = {"ftp": 21, "http": 80, "https": 443, "ws": 80, "wss": 443}.get(
-        scheme
-    )
+    default_port = {"ftp": 21, "http": 80, "https": 443, "ws": 80, "wss": 443}.get(scheme)
     if port_as_int == default_port:
         return None
     return port_as_int
@@ -496,9 +470,7 @@ def percent_encoded(string: str, safe: str) -> str:
     if not string.rstrip(NON_ESCAPED_CHARS):
         return string
 
-    return "".join(
-        [char if char in NON_ESCAPED_CHARS else PERCENT(char) for char in string]
-    )
+    return "".join([char if char in NON_ESCAPED_CHARS else PERCENT(char) for char in string])
 
 
 def quote(string: str, safe: str) -> str:

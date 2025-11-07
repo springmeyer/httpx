@@ -6,13 +6,12 @@ from ._network import *  # NetworkBackend, NetworkStream, timeout
 from ._parsers import *  # HTTPParser, ProtocolError
 from ._pool import *  # Connection, ConnectionPool, Transport
 from ._quickstart import *  # get, post, put, patch, delete
-from ._response import *  # Response
 from ._request import *  # Request
-from ._streams import *  # ByteStream, DuplexStream, FileStream, HTTPStream, Stream
+from ._response import *  # Response
 from ._server import *  # serve_http, run
+from ._streams import *  # ByteStream, DuplexStream, FileStream, HTTPStream, Stream
 from ._urlencode import *  # quote, unquote, urldecode, urlencode
 from ._urls import *  # QueryParams, URL
-
 
 __all__ = [
     "__title__",

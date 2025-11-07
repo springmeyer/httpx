@@ -1,10 +1,10 @@
-import httpx
 import os
 import tempfile
 
-
+import httpx
 
 # HTML
+
 
 def test_html():
     html = httpx.HTML("<html><body>Hello, world</body></html>")
@@ -18,6 +18,7 @@ def test_html():
 
 # Text
 
+
 def test_text():
     text = httpx.Text("Hello, world")
 
@@ -30,6 +31,7 @@ def test_text():
 
 # JSON
 
+
 def test_json():
     data = httpx.JSON({'data': 123})
 
@@ -40,39 +42,28 @@ def test_json():
     assert content_type == "application/json"
 
 
-# Form
+# Form
+
 
 def test_form():
     f = httpx.Form("a=123&a=456&b=789")
     assert str(f) == "a=123&a=456&b=789"
     assert repr(f) == "<Form [('a', '123'), ('a', '456'), ('b', '789')]>"
-    assert f.multi_dict() == {
-        "a": ["123", "456"],
-        "b": ["789"]
-    }
+    assert f.multi_dict() == {"a": ["123", "456"], "b": ["789"]}
 
 
 def test_form_from_dict():
-    f = httpx.Form({
-        "a": ["123", "456"],
-        "b": "789"
-    })
+    f = httpx.Form({"a": ["123", "456"], "b": "789"})
     assert str(f) == "a=123&a=456&b=789"
     assert repr(f) == "<Form [('a', '123'), ('a', '456'), ('b', '789')]>"
-    assert f.multi_dict() == {
-        "a": ["123", "456"],
-        "b": ["789"]
-    }
+    assert f.multi_dict() == {"a": ["123", "456"], "b": ["789"]}
 
 
 def test_form_from_list():
     f = httpx.Form([("a", "123"), ("a", "456"), ("b", "789")])
     assert str(f) == "a=123&a=456&b=789"
     assert repr(f) == "<Form [('a', '123'), ('a', '456'), ('b', '789')]>"
-    assert f.multi_dict() == {
-        "a": ["123", "456"],
-        "b": ["789"]
-    }
+    assert f.multi_dict() == {"a": ["123", "456"], "b": ["789"]}
 
 
 def test_empty_form():
@@ -136,6 +127,7 @@ def test_form_encode():
 
 # Files
 
+
 def test_files():
     f = httpx.Files()
     assert f.multi_dict() == {}
@@ -143,13 +135,15 @@ def test_files():
 
 
 def test_files_from_dict():
-    f = httpx.Files({
-        "a": [
-            httpx.File("123.json"),
-            httpx.File("456.json"),
-        ],
-        "b": httpx.File("789.json")
-    })
+    f = httpx.Files(
+        {
+            "a": [
+                httpx.File("123.json"),
+                httpx.File("456.json"),
+            ],
+            "b": httpx.File("789.json"),
+        }
+    )
     assert f.multi_dict() == {
         "a": [
             httpx.File("123.json"),
@@ -157,20 +151,13 @@ def test_files_from_dict():
         ],
         "b": [
             httpx.File("789.json"),
-        ]
+        ],
     }
-    assert repr(f) == (
-        "<Files [('a', <File '123.json'>), ('a', <File '456.json'>), ('b', <File '789.json'>)]>"
-    )
-
+    assert repr(f) == ("<Files [('a', <File '123.json'>), ('a', <File '456.json'>), ('b', <File '789.json'>)]>")
 
 
 def test_files_from_list():
-    f = httpx.Files([
-        ("a", httpx.File("123.json")),
-        ("a", httpx.File("456.json")),
-        ("b", httpx.File("789.json"))
-    ])
+    f = httpx.Files([("a", httpx.File("123.json")), ("a", httpx.File("456.json")), ("b", httpx.File("789.json"))])
     assert f.multi_dict() == {
         "a": [
             httpx.File("123.json"),
@@ -178,19 +165,13 @@ def test_files_from_list():
         ],
         "b": [
             httpx.File("789.json"),
-        ]
+        ],
     }
-    assert repr(f) == (
-        "<Files [('a', <File '123.json'>), ('a', <File '456.json'>), ('b', <File '789.json'>)]>"
-    )
+    assert repr(f) == ("<Files [('a', <File '123.json'>), ('a', <File '456.json'>), ('b', <File '789.json'>)]>")
 
 
 def test_files_accessors():
-    f = httpx.Files([
-        ("a", httpx.File("123.json")),
-        ("a", httpx.File("456.json")),
-        ("b", httpx.File("789.json"))
-    ])
+    f = httpx.Files([("a", httpx.File("123.json")), ("a", httpx.File("456.json")), ("b", httpx.File("789.json"))])
     assert "a" in f
     assert "A" not in f
     assert "c" not in f
@@ -200,11 +181,7 @@ def test_files_accessors():
 
 
 def test_files_dict():
-    f = httpx.Files([
-        ("a", httpx.File("123.json")),
-        ("a", httpx.File("456.json")),
-        ("b", httpx.File("789.json"))
-    ])
+    f = httpx.Files([("a", httpx.File("123.json")), ("a", httpx.File("456.json")), ("b", httpx.File("789.json"))])
     assert list(f.keys()) == ["a", "b"]
     assert list(f.values()) == [httpx.File("123.json"), httpx.File("789.json")]
     assert list(f.items()) == [("a", httpx.File("123.json")), ("b", httpx.File("789.json"))]
@@ -213,17 +190,13 @@ def test_files_dict():
 
 
 def test_files_multidict():
-    f = httpx.Files([
-        ("a", httpx.File("123.json")),
-        ("a", httpx.File("456.json")),
-        ("b", httpx.File("789.json"))
-    ])
+    f = httpx.Files([("a", httpx.File("123.json")), ("a", httpx.File("456.json")), ("b", httpx.File("789.json"))])
     assert f.get_list("a") == [
         httpx.File("123.json"),
         httpx.File("456.json"),
     ]
     assert f.multi_items() == [
-        ("a", httpx.File("123.json")), 
+        ("a", httpx.File("123.json")),
         ("a", httpx.File("456.json")),
         ("b", httpx.File("789.json")),
     ]
@@ -234,23 +207,21 @@ def test_files_multidict():
         ],
         "b": [
             httpx.File("789.json"),
-        ]
+        ],
     }
 
 
 def test_files_builtins():
-    f = httpx.Files([
-        ("a", httpx.File("123.json")),
-        ("a", httpx.File("456.json")),
-        ("b", httpx.File("789.json"))
-    ])
+    f = httpx.Files([("a", httpx.File("123.json")), ("a", httpx.File("456.json")), ("b", httpx.File("789.json"))])
     assert len(f) == 2
     assert bool(f)
-    assert f == httpx.Files([
-        ("a", httpx.File("123.json")),
-        ("a", httpx.File("456.json")),
-        ("b", httpx.File("789.json")),
-    ])
+    assert f == httpx.Files(
+        [
+            ("a", httpx.File("123.json")),
+            ("a", httpx.File("456.json")),
+            ("b", httpx.File("789.json")),
+        ]
+    )
 
 
 def test_multipart():

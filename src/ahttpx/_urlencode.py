@@ -3,7 +3,7 @@ import re
 __all__ = ["quote", "unquote", "urldecode", "urlencode"]
 
 
-# Matchs a sequence of one or more '%xx' escapes.
+# Matchs a sequence of one or more '%xx' escapes.
 PERCENT_ENCODED_REGEX = re.compile("(%[A-Fa-f0-9][A-Fa-f0-9])+")
 
 # https://datatracker.ietf.org/doc/html/rfc3986#section-2.3
@@ -18,18 +18,12 @@ def urlencode(multidict, safe=SAFE):
     safe += "+"
     pairs = [(k.replace(" ", "+"), v.replace(" ", "+")) for k, v in pairs]
 
-    return "&".join(
-        f"{quote(key, safe)}={quote(val, safe)}"
-        for key, val in pairs
-    )
+    return "&".join(f"{quote(key, safe)}={quote(val, safe)}" for key, val in pairs)
 
 
 def urldecode(string):
     parts = [part.partition("=") for part in string.split("&") if part]
-    pairs = [
-        (unquote(key), unquote(val))
-        for key, _, val in parts
-    ]
+    pairs = [(unquote(key), unquote(val)) for key, _, val in parts]
 
     pairs = [(k.replace("+", " "), v.replace("+", " ")) for k, v in pairs]
 
@@ -45,10 +39,7 @@ def quote(string, safe=SAFE):
         return string
 
     # Replace any characters not in the safe set with '%xx' escape sequences.
-    return "".join([
-        char if char in safe else percent(char)
-        for char in string
-    ])
+    return "".join([char if char in safe else percent(char) for char in string])
 
 
 def unquote(string):
@@ -56,7 +47,7 @@ def unquote(string):
     if '%' not in string:
         return string
 
-    # Unquote.
+    # Unquote.
     parts = []
     current_position = 0
     for match in re.finditer(PERCENT_ENCODED_REGEX, string):

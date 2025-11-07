@@ -1,16 +1,10 @@
 import re
 import typing
 
-
 __all__ = ["Headers"]
 
 
-VALID_HEADER_CHARS = (
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz"
-    "0123456789"
-    "!#$%&'*+-.^_`|~"
-)
+VALID_HEADER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "abcdefghijklmnopqrstuvwxyz" "0123456789" "!#$%&'*+-.^_`|~"
 
 
 # TODO...
@@ -216,12 +210,13 @@ def parse_opts_header(header: str) -> tuple[str, dict[str, str]]:
     match = re.match(r'^([^;]+)', header)
     if match:
         content_type = match.group(1).strip().lower()
-        rest = header[match.end():]
+        rest = header[match.end() :]
     else:
         return '', {}
 
     # Parse parameters, accounting for quoted strings
-    param_pattern = re.compile(r'''
+    param_pattern = re.compile(
+        r'''
         ;\s*                             # Semicolon + optional whitespace
         (?P<key>[^=;\s]+)                # Parameter key
         =                                # Equal sign
@@ -230,7 +225,9 @@ def parse_opts_header(header: str) -> tuple[str, dict[str, str]]:
             |                            #   OR
             [^;]*                        #   Unquoted string (until semicolon)
         )
-    ''', re.VERBOSE)
+    ''',
+        re.VERBOSE,
+    )
 
     for match in param_pattern.finditer(rest):
         key = match.group('key').lower()

@@ -3,19 +3,23 @@ import pytest
 
 
 def test_headers_from_dict():
-    headers = httpx.Headers({
-        'Content-Length': '1024',
-        'Content-Type': 'text/plain; charset=utf-8',
-    })
+    headers = httpx.Headers(
+        {
+            'Content-Length': '1024',
+            'Content-Type': 'text/plain; charset=utf-8',
+        }
+    )
     assert headers['Content-Length'] == '1024'
     assert headers['Content-Type'] == 'text/plain; charset=utf-8'
 
 
 def test_headers_from_list():
-    headers = httpx.Headers([
-        ('Location', 'https://www.example.com'),
-        ('Set-Cookie', 'session_id=3498jj489jhb98jn'),
-    ])
+    headers = httpx.Headers(
+        [
+            ('Location', 'https://www.example.com'),
+            ('Set-Cookie', 'session_id=3498jj489jhb98jn'),
+        ]
+    )
     assert headers['Location'] == 'https://www.example.com'
     assert headers['Set-Cookie'] == 'session_id=3498jj489jhb98jn'
 

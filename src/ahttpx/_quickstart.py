@@ -6,7 +6,6 @@ from ._headers import Headers
 from ._streams import Stream
 from ._urls import URL
 
-
 __all__ = ['get', 'post', 'put', 'patch', 'delete']
 
 
@@ -17,6 +16,7 @@ async def get(
     async with Client() as client:
         return await client.request("GET", url=url, headers=headers)
 
+
 async def post(
     url: URL | str,
     headers: Headers | typing.Mapping[str, str] | None = None,
@@ -24,6 +24,7 @@ async def post(
 ):
     async with Client() as client:
         return await client.request("POST", url, headers=headers, content=content)
+
 
 async def put(
     url: URL | str,
@@ -33,6 +34,7 @@ async def put(
     async with Client() as client:
         return await client.request("PUT", url, headers=headers, content=content)
 
+
 async def patch(
     url: URL | str,
     headers: Headers | typing.Mapping[str, str] | None = None,
@@ -40,6 +42,7 @@ async def patch(
 ):
     async with Client() as client:
         return await client.request("PATCH", url, headers=headers, content=content)
+
 
 async def delete(
     url: URL | str,

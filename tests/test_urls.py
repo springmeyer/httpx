@@ -39,6 +39,7 @@ def test_url_components():
 
 # QueryParams
 
+
 def test_queryparams():
     params = httpx.QueryParams({"color": "black", "size": "medium"})
     assert str(params) == 'color=black&size=medium'
@@ -145,19 +146,11 @@ def test_queryparams_misc(source):
     assert list(q) == ["a", "b"]
     assert dict(q) == {"a": "123", "b": "789"}
     assert str(q) == "a=123&a=456&b=789"
-    assert httpx.QueryParams({"a": "123", "b": "456"}) == httpx.QueryParams(
-        [("a", "123"), ("b", "456")]
-    )
-    assert httpx.QueryParams({"a": "123", "b": "456"}) == httpx.QueryParams(
-        "a=123&b=456"
-    )
-    assert httpx.QueryParams({"a": "123", "b": "456"}) == httpx.QueryParams(
-        {"b": "456", "a": "123"}
-    )
+    assert httpx.QueryParams({"a": "123", "b": "456"}) == httpx.QueryParams([("a", "123"), ("b", "456")])
+    assert httpx.QueryParams({"a": "123", "b": "456"}) == httpx.QueryParams("a=123&b=456")
+    assert httpx.QueryParams({"a": "123", "b": "456"}) == httpx.QueryParams({"b": "456", "a": "123"})
     assert httpx.QueryParams() == httpx.QueryParams({})
-    assert httpx.QueryParams([("a", "123"), ("a", "456")]) == httpx.QueryParams(
-        "a=123&a=456"
-    )
+    assert httpx.QueryParams([("a", "123"), ("a", "456")]) == httpx.QueryParams("a=123&a=456")
     assert httpx.QueryParams({"a": "123", "b": "456"}) != "invalid"
 
     q = httpx.QueryParams([("a", "123"), ("a", "456")])

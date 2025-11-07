@@ -11,36 +11,30 @@ class TrickleIO(httpx.Stream):
 
     def write(self, data: bytes) -> None:
         self._stream.write(data)
-    
+
     def close(self) -> None:
         self._stream.close()
 
 
 def test_parser():
     stream = httpx.DuplexStream(
-        b"HTTP/1.1 200 OK\r\n"
-        b"Content-Length: 12\r\n"
-        b"Content-Type: text/plain\r\n"
-        b"\r\n"
-        b"hello, world"
+        b"HTTP/1.1 200 OK\r\n" b"Content-Length: 12\r\n" b"Content-Type: text/plain\r\n" b"\r\n" b"hello, world"
     )
 
     p = httpx.HTTPParser(stream, mode='CLIENT')
     p.send_method_line(b"POST", b"/", b"HTTP/1.1")
-    p.send_headers([
-        (b"Host", b"example.com"),
-        (b"Content-Type", b"application/json"),
-        (b"Content-Length", b"23"),
-    ])
+    p.send_headers(
+        [
+            (b"Host", b"example.com"),
+            (b"Content-Type", b"application/json"),
+            (b"Content-Length", b"23"),
+        ]
+    )
     p.send_body(b'{"msg": "hello, world"}')
     p.send_body(b'')
 
     assert stream.input_bytes() == (
-        b"HTTP/1.1 200 OK\r\n"
-        b"Content-Length: 12\r\n"
-        b"Content-Type: text/plain\r\n"
-        b"\r\n"
-        b"hello, world"
+        b"HTTP/1.1 200 OK\r\n" b"Content-Length: 12\r\n" b"Content-Type: text/plain\r\n" b"\r\n" b"hello, world"
     )
     assert stream.output_bytes() == (
         b"POST / HTTP/1.1\r\n"
@@ -72,11 +66,7 @@ def test_parser():
 
 
 def test_parser_server():
-    stream = httpx.DuplexStream(
-        b"GET / HTTP/1.1\r\n"
-        b"Host: www.example.com\r\n"
-        b"\r\n"
-    )
+    stream = httpx.DuplexStream(b"GET / HTTP/1.1\r\n" b"Host: www.example.com\r\n" b"\r\n")
 
     p = httpx.HTTPParser(stream, mode='SERVER')
     method, target, protocol = p.recv_method_line()
@@ -92,18 +82,16 @@ def test_parser_server():
     assert body == b''
 
     p.send_status_line(b"HTTP/1.1", 200, b"OK")
-    p.send_headers([
-        (b"Content-Type", b"application/json"),
-        (b"Content-Length", b"23"),
-    ])
+    p.send_headers(
+        [
+            (b"Content-Type", b"application/json"),
+            (b"Content-Length", b"23"),
+        ]
+    )
     p.send_body(b'{"msg": "hello, world"}')
     p.send_body(b'')
 
-    assert stream.input_bytes() == (
-        b"GET / HTTP/1.1\r\n"
-        b"Host: www.example.com\r\n"
-        b"\r\n"
-    )
+    assert stream.input_bytes() == (b"GET / HTTP/1.1\r\n" b"Host: www.example.com\r\n" b"\r\n")
     assert stream.output_bytes() == (
         b"HTTP/1.1 200 OK\r\n"
         b"Content-Type: application/json\r\n"
@@ -119,29 +107,23 @@ def test_parser_server():
 
 def test_parser_trickle():
     stream = httpx.DuplexStream(
-        b"HTTP/1.1 200 OK\r\n"
-        b"Content-Length: 12\r\n"
-        b"Content-Type: text/plain\r\n"
-        b"\r\n"
-        b"hello, world"
+        b"HTTP/1.1 200 OK\r\n" b"Content-Length: 12\r\n" b"Content-Type: text/plain\r\n" b"\r\n" b"hello, world"
     )
 
     p = httpx.HTTPParser(TrickleIO(stream), mode='CLIENT')
     p.send_method_line(b"POST", b"/", b"HTTP/1.1")
-    p.send_headers([
-        (b"Host", b"example.com"),
-        (b"Content-Type", b"application/json"),
-        (b"Content-Length", b"23"),
-    ])
+    p.send_headers(
+        [
+            (b"Host", b"example.com"),
+            (b"Content-Type", b"application/json"),
+            (b"Content-Length", b"23"),
+        ]
+    )
     p.send_body(b'{"msg": "hello, world"}')
     p.send_body(b'')
 
     assert stream.input_bytes() == (
-        b"HTTP/1.1 200 OK\r\n"
-        b"Content-Length: 12\r\n"
-        b"Content-Type: text/plain\r\n"
-        b"\r\n"
-        b"hello, world"
+        b"HTTP/1.1 200 OK\r\n" b"Content-Length: 12\r\n" b"Content-Type: text/plain\r\n" b"\r\n" b"hello, world"
     )
     assert stream.output_bytes() == (
         b"POST / HTTP/1.1\r\n"
@@ -181,11 +163,13 @@ def test_parser_transfer_encoding_chunked():
 
     p = httpx.HTTPParser(stream, mode='CLIENT')
     p.send_method_line(b"POST", b"/", b"HTTP/1.1")
-    p.send_headers([
-        (b"Host", b"example.com"),
-        (b"Content-Type", b"application/json"),
-        (b"Transfer-Encoding", b"chunked"),
-    ])
+    p.send_headers(
+        [
+            (b"Host", b"example.com"),
+            (b"Content-Type", b"application/json"),
+            (b"Transfer-Encoding", b"chunked"),
+        ]
+    )
     p.send_body(b'{"msg": "hello, world"}')
     p.send_body(b'')
 
@@ -238,11 +222,13 @@ def test_parser_transfer_encoding_chunked_trickle():
 
     p = httpx.HTTPParser(TrickleIO(stream), mode='CLIENT')
     p.send_method_line(b"POST", b"/", b"HTTP/1.1")
-    p.send_headers([
-        (b"Host", b"example.com"),
-        (b"Content-Type", b"application/json"),
-        (b"Transfer-Encoding", b"chunked"),
-    ])
+    p.send_headers(
+        [
+            (b"Host", b"example.com"),
+            (b"Content-Type", b"application/json"),
+            (b"Transfer-Encoding", b"chunked"),
+        ]
+    )
     p.send_body(b'{"msg": "hello, world"}')
     p.send_body(b'')
 
@@ -412,10 +398,7 @@ def test_parser_large_body():
     body = b"x" * 6988
 
     stream = httpx.DuplexStream(
-        b"HTTP/1.1 200 OK\r\n"
-        b"Content-Length: 6988\r\n"
-        b"Content-Type: text/plain\r\n"
-        b"\r\n" + body
+        b"HTTP/1.1 200 OK\r\n" b"Content-Length: 6988\r\n" b"Content-Type: text/plain\r\n" b"\r\n" + body
     )
 
     p = httpx.HTTPParser(stream, mode='CLIENT')
@@ -458,11 +441,7 @@ def test_parser_stream_large_body():
 
 def test_parser_not_enough_data_received():
     stream = httpx.DuplexStream(
-        b"HTTP/1.1 200 OK\r\n"
-        b"Content-Length: 188\r\n"
-        b"Content-Type: text/plain\r\n"
-        b"\r\n"
-        b"truncated"
+        b"HTTP/1.1 200 OK\r\n" b"Content-Length: 188\r\n" b"Content-Type: text/plain\r\n" b"\r\n" b"truncated"
     )
 
     p = httpx.HTTPParser(stream, mode='CLIENT')
@@ -484,11 +463,13 @@ def test_parser_not_enough_data_sent():
 
     p = httpx.HTTPParser(stream, mode='CLIENT')
     p.send_method_line(b"POST", b"/", b"HTTP/1.1")
-    p.send_headers([
-        (b"Host", b"example.com"),
-        (b"Content-Type", b"application/json"),
-        (b"Content-Length", b"23"),
-    ])
+    p.send_headers(
+        [
+            (b"Host", b"example.com"),
+            (b"Content-Type", b"application/json"),
+            (b"Content-Length", b"23"),
+        ]
+    )
     p.send_body(b'{"msg": "too smol"}')
     msg = 'Not enough data sent for declared Content-Length'
     with pytest.raises(httpx.ProtocolError, match=msg):
@@ -500,11 +481,13 @@ def test_parser_too_much_data_sent():
 
     p = httpx.HTTPParser(stream, mode='CLIENT')
     p.send_method_line(b"POST", b"/", b"HTTP/1.1")
-    p.send_headers([
-        (b"Host", b"example.com"),
-        (b"Content-Type", b"application/json"),
-        (b"Content-Length", b"19"),
-    ])
+    p.send_headers(
+        [
+            (b"Host", b"example.com"),
+            (b"Content-Type", b"application/json"),
+            (b"Content-Length", b"19"),
+        ]
+    )
     msg = 'Too much data sent for declared Content-Length'
     with pytest.raises(httpx.ProtocolError, match=msg):
         p.send_body(b'{"msg": "too chonky"}')
@@ -522,19 +505,17 @@ def test_parser_missing_host_header():
 
 def test_client_connection_close():
     stream = httpx.DuplexStream(
-        b"HTTP/1.1 200 OK\r\n"
-        b"Content-Length: 12\r\n"
-        b"Content-Type: text/plain\r\n"
-        b"\r\n"
-        b"hello, world"
+        b"HTTP/1.1 200 OK\r\n" b"Content-Length: 12\r\n" b"Content-Type: text/plain\r\n" b"\r\n" b"hello, world"
     )
 
     p = httpx.HTTPParser(stream, mode='CLIENT')
     p.send_method_line(b"GET", b"/", b"HTTP/1.1")
-    p.send_headers([
-        (b"Host", b"example.com"),
-        (b"Connection", b"close"),
-    ])
+    p.send_headers(
+        [
+            (b"Host", b"example.com"),
+            (b"Connection", b"close"),
+        ]
+    )
     p.send_body(b'')
 
     protocol, code, reason_phase = p.recv_status_line()
@@ -597,19 +578,17 @@ def test_server_connection_close():
 
 def test_invalid_status_code():
     stream = httpx.DuplexStream(
-        b"HTTP/1.1 99 OK\r\n"
-        b"Content-Length: 12\r\n"
-        b"Content-Type: text/plain\r\n"
-        b"\r\n"
-        b"hello, world"
+        b"HTTP/1.1 99 OK\r\n" b"Content-Length: 12\r\n" b"Content-Type: text/plain\r\n" b"\r\n" b"hello, world"
     )
 
     p = httpx.HTTPParser(stream, mode='CLIENT')
     p.send_method_line(b"GET", b"/", b"HTTP/1.1")
-    p.send_headers([
-        (b"Host", b"example.com"),
-        (b"Connection", b"close"),
-    ])
+    p.send_headers(
+        [
+            (b"Host", b"example.com"),
+            (b"Connection", b"close"),
+        ]
+    )
     p.send_body(b'')
 
     msg = "Received invalid status code"
@@ -664,19 +643,17 @@ def test_1xx_status_code():
 
 def test_received_invalid_content_length():
     stream = httpx.DuplexStream(
-        b"HTTP/1.1 200 OK\r\n"
-        b"Content-Length: -999\r\n"
-        b"Content-Type: text/plain\r\n"
-        b"\r\n"
-        b"hello, world"
+        b"HTTP/1.1 200 OK\r\n" b"Content-Length: -999\r\n" b"Content-Type: text/plain\r\n" b"\r\n" b"hello, world"
     )
 
     p = httpx.HTTPParser(stream, mode='CLIENT')
     p.send_method_line(b"GET", b"/", b"HTTP/1.1")
-    p.send_headers([
-        (b"Host", b"example.com"),
-        (b"Connection", b"close"),
-    ])
+    p.send_headers(
+        [
+            (b"Host", b"example.com"),
+            (b"Connection", b"close"),
+        ]
+    )
     p.send_body(b'')
 
     p.recv_status_line()
@@ -694,27 +671,27 @@ def test_sent_invalid_content_length():
     with pytest.raises(httpx.ProtocolError, match=msg):
         # Limited to 20 digits.
         # 100 million terabytes should be enough for anyone.
-        p.send_headers([
-            (b"Host", b"example.com"),
-            (b"Content-Length", b"100000000000000000000"),
-        ])
+        p.send_headers(
+            [
+                (b"Host", b"example.com"),
+                (b"Content-Length", b"100000000000000000000"),
+            ]
+        )
 
 
 def test_received_invalid_characters_in_chunk_size():
     stream = httpx.DuplexStream(
-        b"HTTP/1.1 200 OK\r\n"
-        b"Transfer-Encoding: chunked\r\n"
-        b"Content-Type: text/plain\r\n"
-        b"\r\n"
-        b"0xFF\r\n..."
+        b"HTTP/1.1 200 OK\r\n" b"Transfer-Encoding: chunked\r\n" b"Content-Type: text/plain\r\n" b"\r\n" b"0xFF\r\n..."
     )
 
     p = httpx.HTTPParser(stream, mode='CLIENT')
     p.send_method_line(b"GET", b"/", b"HTTP/1.1")
-    p.send_headers([
-        (b"Host", b"example.com"),
-        (b"Connection", b"close"),
-    ])
+    p.send_headers(
+        [
+            (b"Host", b"example.com"),
+            (b"Connection", b"close"),
+        ]
+    )
     p.send_body(b'')
 
     p.recv_status_line()
@@ -735,10 +712,12 @@ def test_received_oversized_chunk():
 
     p = httpx.HTTPParser(stream, mode='CLIENT')
     p.send_method_line(b"GET", b"/", b"HTTP/1.1")
-    p.send_headers([
-        (b"Host", b"example.com"),
-        (b"Connection", b"close"),
-    ])
+    p.send_headers(
+        [
+            (b"Host", b"example.com"),
+            (b"Connection", b"close"),
+        ]
+    )
     p.send_body(b'')
 
     p.recv_status_line()

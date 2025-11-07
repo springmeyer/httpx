@@ -123,4 +123,3 @@ def test_connection_stream(server):
 # #     with conn.upgrade("CONNECT", "www.encode.io:443") as stream:
 # #         stream.start_tls(ctx, hostname="www.encode.io")
 # #         ...
-
