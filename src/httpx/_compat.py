@@ -13,6 +13,20 @@ from ._streams import ByteStream
 class AsyncClient(ahttpx.Client):
     """Async HTTP client with 0.28 API compatibility."""
 
+    def __init__(self, *args, limits=None, **kwargs):
+        """
+        Initialize AsyncClient with 0.28 API compatibility.
+        
+        In v0.28, limits were passed as a Limits object.
+        In v1, limits are configured on the ConnectionPool (transport).
+        This wrapper accepts both styles for compatibility.
+        """
+        # In httpx v1, limits are handled by the transport (ConnectionPool)
+        # For now, we accept the limits parameter but ignore it
+        # The connection pool will use default limits
+        # TODO: If specific limit configuration is needed, configure the transport
+        super().__init__(*args, **kwargs)
+
     async def aclose(self):
         """Alias for close() to maintain 0.28 API compatibility."""
         await self.close()
