@@ -8,6 +8,15 @@ import ahttpx
 from ._streams import ByteStream
 
 
+# Sentinel value for default client parameters (used by starlette/fastapi)
+class UseClientDefault:
+    """Sentinel class used to indicate that a client default should be used."""
+    pass
+
+
+USE_CLIENT_DEFAULT = UseClientDefault()
+
+
 # Create AsyncClient as an alias to ahttpx.Client
 # and monkey-patch it to add aclose() as an alias for close()
 class AsyncClient(ahttpx.Client):

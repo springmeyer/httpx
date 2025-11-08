@@ -1,6 +1,7 @@
 import types
 import typing
 
+from ._compat import USE_CLIENT_DEFAULT, UseClientDefault
 from ._content import Content
 from ._headers import Headers
 from ._pool import ConnectionPool, Transport
@@ -9,7 +10,7 @@ from ._response import Response
 from ._streams import Stream
 from ._urls import URL
 
-__all__ = ["Client"]
+__all__ = ["Client", "USE_CLIENT_DEFAULT", "UseClientDefault"]
 
 
 class Client:

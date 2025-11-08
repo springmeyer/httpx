@@ -83,6 +83,8 @@ __all__ = [
     "URL",
     "urldecode",
     "urlencode",
+    "USE_CLIENT_DEFAULT",
+    "UseClientDefault",
     "WriteError",
     "WriteTimeout",
 ]
